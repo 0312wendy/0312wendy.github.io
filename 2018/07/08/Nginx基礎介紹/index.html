@@ -1,43 +1,199 @@
-<%- partial('_partial/head') %>
+<!DOCTYPE html><html lang="en-us"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>Nginx基礎介紹 | 萱仔的Blog</title><meta name="description"><meta name="generator" content="萱仔的Blog"><meta name="author" content="John Doe"><meta name="keywords" content="sjaak van den berg, svdb, bitcoin, crypto, payment, integration, bitcoins, wordpress, betaling, webshop, front end, design, ontwerp, developer"><meta name="HandheldFriendly" content="True"><meta name="MobileOptimized" content="320"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=0"><link rel="stylesheet" type="text/css" href="/styles/screen.css"><link rel="apple-touch-icon" sizes="57x57" href="/images/apple-touch-icon-57x57.png"><link rel="apple-touch-icon" sizes="60x60" href="/images/apple-touch-icon-60x60.png"><link rel="apple-touch-icon" sizes="72x72" href="/images/apple-touch-icon-72x72.png"><link rel="apple-touch-icon" sizes="76x76" href="/images/apple-touch-icon-76x76.png"><link rel="apple-touch-icon" sizes="114x114" href="/images/apple-touch-icon-114x114.png"><link rel="apple-touch-icon" sizes="120x120" href="/images/apple-touch-icon-120x120.png"><link rel="apple-touch-icon" sizes="144x144" href="/images/apple-touch-icon-144x144.png"><link rel="apple-touch-icon" sizes="152x152" href="/images/apple-touch-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-180x180.png"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png"><link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png"><link rel="icon" type="image/png" sizes="160x160" href="/images/favicon-160x160.png"><link rel="icon" type="image/png" sizes="192x192" href="/images/favicon-192x192.png"><meta name="msapplication-TileColor" content="#121315"><meta name="msapplication-TileImage" content="/images/mstile-144x144.png"></head><body itemscope itemtype="https://schema.org/WebPage"><header itemscope itemtype="https://schema.org/WPHeader"><a href="/"><img src="/images/svdb.png" alt="萱仔的Blog" title="萱仔的Blog"></a><h1><a href="/" alt="萱仔的Blog" title="萱仔的Blog" itemprop="headline">萱仔的Blog</a></h1><p itemprop="description"></p><nav itemscope itemtype="https://schema.org/SiteNavigationElement"><ul><li itemprop="name"><a href="/" alt="Home" title="Home" itemprop="url">Home</a></li><li itemprop="name"><a href="/articles" alt="Articles" title="Articles" itemprop="url">Articles</a></li><li itemprop="name"><a href="/about" alt="About" title="About" itemprop="url">About</a></li></ul></nav><div class="space"></div></header><main itemscope itemtype="https://schema.org/Blog"><article class="full"><h1 itemprop="headline">Nginx基礎介紹</h1><span class="post-meta">Published on<time itemprop="datePublished" datetime="2018-07-08T03:55:28.000Z"> 星期日, 七月 8日 2018 at 11:55</time><br>Last updated on<time itemprop="dateModified" datetime="2018-07-08T03:55:28.000Z"> 星期一, 八月 6日 2018 at 10:56</time></span><h4 id="什麼是Nginx"><a href="#什麼是Nginx" class="headerlink" title="什麼是Nginx?"></a>什麼是Nginx?<br></h4><p>Nginx為一個網頁伺服器，它能反向代理 HTTP, HTTPS, SMTP, POP3, IMAP的協定連接，以及設置Load balance和HTTP cache。</p>
+<h5 id="HTTP伺服器"><a href="#HTTP伺服器" class="headerlink" title="HTTP伺服器"></a>HTTP伺服器</h5><p>作為HTTP伺服器，可以極快的速度為伺服器上的靜態文件（ex:HTML、圖片）通過HTTP協議展現給客戶端。</p>
+<h5 id="代理伺服器"><a href="#代理伺服器" class="headerlink" title="代理伺服器"></a>代理伺服器</h5><p>類似一個跳板機，可讓客戶端訪問原本無法訪問的資源，並做緩存，加速訪問資源，代理可以記錄用戶訪問記錄（上網行為管理），對外隱藏用戶信息。</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/正向.jpg" alt=""></p>
+<h5 id="反向代理伺服器"><a href="#反向代理伺服器" class="headerlink" title="反向代理伺服器"></a>反向代理伺服器</h5><p>客戶端本來可以直接通過HTTP訪問某網站的應用伺服器，如果管理員在中間加上一個Nginx，客戶端會先請求Nginx，Nginx再請求應用伺服器，並將結果返回給客戶端，此時Nginx就是反向代理伺服器，反向代理可以保證內網的安全，可以使用反向代理提供WAF功能，阻止web攻擊。</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/反向.jpg" alt=""></p>
+<h5 id="負載均衡器"><a href="#負載均衡器" class="headerlink" title="負載均衡器"></a>負載均衡器</h5><p>當網站訪問量變大，網站越來越慢，一台伺服器已經不夠用。可將相同的應用部署在多台伺服器上，將大量用戶的請求分配給多台機器處理。同時帶來的好處是，其中一台伺服器掛了，只要還有其他伺服器正常運行，就不會影響用戶使用。<br><img src="/2018/07/08/Nginx基礎介紹/reproxy.jpg" alt=""></p>
+<h4 id="安裝Nginx"><a href="#安裝Nginx" class="headerlink" title="安裝Nginx"></a>安裝Nginx</h4><p>   使用docker安裝</p>
+<pre><code>docker run -d -p 7777:80 --name nginx-server nginx
+</code></pre><p>查看容器是否運行</p>
+<pre><code>docker ps -a
+</code></pre><p>安裝完成畫面</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/nginx1.png" alt=""></p>
+<h4 id="映射網頁目錄"><a href="#映射網頁目錄" class="headerlink" title="映射網頁目錄"></a>映射網頁目錄</h4><p>因為網頁文件都放在容器裡，無法直接修改，顯然很不方便，<br>因此可將網頁文件所在的目錄/usr/share/nginx/html映射到本機</p>
+<p>首先，新建一個目錄，並進入該目錄</p>
+<pre><code>mkdir nginx-docker
+cd nginx-docker
+</code></pre><p>在該目錄底下新建一個html子目錄</p>
+<pre><code>mkdir html
+</code></pre><p>並在此目錄底下建置一個index.html文件，內容如下:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+    &lt;title&gt;&lt;/title&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hi Nginx Docker&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>將原本的容器停止並刪除後，到剛剛建置的資料夾底下</p>
+<pre><code>cd nginx-docker
+</code></pre><p>接著，就可以把子目錄html，映射到容器的網頁文件目錄/usr/share/nginx/html裡了</p>
+<pre><code>docker run -d -p 7777:80 --name nginx-server -v &quot;$PWD/html&quot;:/usr/share/nginx/html nginx
+</code></pre><p>打開瀏覽器，就可以看到我們輸入的內容了</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/nginx2.png" alt=""></p>
+<h4 id="修改Nginx的設定檔"><a href="#修改Nginx的設定檔" class="headerlink" title="修改Nginx的設定檔"></a>修改Nginx的設定檔</h4><p>因為還要修改Nginx容器內的設定檔，可以將容器內的Nginx設定檔拷貝到本機以方便作業，<br>以下指令為將nginx-server容器的(自行命名的容器名稱)/etc/nginx拷貝到當前目錄，最後面的點不能省略</p>
+<pre><code>docker cp nginx-server:/etc/nginx .
+</code></pre><p>執行完成後，會看到當前目錄底下多出一個nginx子目錄</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/nginx3.png" width="50%" height="50%"></p>
+<p>名稱改為conf以利日後辨識</p>
+<pre><code>mv nginx conf
+</code></pre><p>再來將前一個建置的容器停止運行並刪除，重新運行一個新的容器，這次不只映射了網頁目錄，還映射了設定檔</p>
+<pre><code>docker run -d -p 7777:80 --name nginx-server -v &quot;$PWD/html&quot;:/usr/share/nginx/html -v &quot;$PWD/conf&quot;:/etc/nginx nginx
+</code></pre><h4 id="簡單壓力測試"><a href="#簡單壓力測試" class="headerlink" title="簡單壓力測試"></a>簡單壓力測試</h4><p>測試Nginx的性能(因我們安裝的Nginx服務為容器，以下命令要在Nginx容器使用)</p>
+<p>1.安裝ab命令</p>
+<pre><code>apt-get install apache2-utils
+</code></pre><p>2.對Nginx預設主頁進行10000次的連接測試</p>
+<pre><code>ab -c 1 -n 10000 http://127.0.0.1/index.html
+</code></pre><p>3.可看到平均每秒處理4000多筆請求</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/test.png" alt=""></p>
+<h4 id="補充-與Apache的性能比較"><a href="#補充-與Apache的性能比較" class="headerlink" title="補充:與Apache的性能比較"></a>補充:與Apache的性能比較</h4><p>1.Docker安装Apache</p>
+<pre><code>docker run -p 3003:80 -d --name apache httpd
+</code></pre><p>2.對Apache預設主頁進行10000次的連接測試</p>
+<pre><code>ab -c 1 -n 10000 http://127.0.0.1/index.html
+</code></pre><p>3.Apache平均每秒處理3000多筆請求</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/test2.png" alt=""></p>
+<h4 id="設定檔介紹"><a href="#設定檔介紹" class="headerlink" title="設定檔介紹"></a>設定檔介紹</h4><p>安裝完Nginx後，原本的設定預設就已經配置妥當，所以能夠直接啟用服務，不過我們還是要了解Nginx是如何配置的</p>
+<p>在Nginx的設定檔中，分為:<font color="blue">指令</font>、<font color="green">模組</font>兩種內容，<font color="blue">指令</font>需要填入對應的參數及空格，最後面需以分號 ; 做結尾，<font color="green">模組</font>的部份則是以大括號{ }做區分，我們可以在{ }內部新增所需的指令與模組，進而擴充功能，Nginx程式註解的部分則使用 # 符號</p>
+<p>基本的Nginx設定檔模組包含<font color="red">http、server、location</font>三個模組</p>
+<p>主要設定檔在 nginx.conf</p>
+<pre><code># 啟用程序的Linux帳戶
+user  nginx;
 
-<% if (is_post()){ %>
-  <body data-spy="scroll" data-target="#toc" data-offset="50">
-<% } else {%>
-  <body>
-<% } %>
+# 啟用的執行緒數量(建議CPU核心數 x 2)
+worker_processes  2;
 
-  <% if (is_home() && theme.home_background_image.enable){ %>
-    <%- partial('_partial/header', null, {cache: !config.relative_link}) %>
-  <% } %>
-  <div id="container">
-    <div id="wrap">
-      <% if (!is_home() || !theme.home_background_image.enable){ %>
-        <%- partial('_partial/header-post') %>
-      <% } %>
-            
-      <div id="content" class="outer">
-        <% if (theme.sidebar && theme.sidebar !== 'bottom' && (is_archive())){ %>
-          <section id="main"><%- body %></section>
-          <%- partial('_partial/sidebar', null, {cache: !config.relative_link}) %>
-        <% } else {%>
-          <section id="main" style="float:none;"><%- body %></section>
-        <% } %>
-      </div>
-      <% if (is_home()){ %>
-        <div align="center" style="margin-top: 30px;"><hr class="hr" style="margin:0px; height:3px;"></div>
-      <% } %>
-      <%- partial('_partial/footer', null, {cache: !config.relative_link}) %>
-    </div>
-    <!-- <%- partial('_partial/mobile-nav', null, {cache: !config.relative_link}) %> -->
-    <%- partial('_partial/after-footer') %>
-  </div>
+# Error Log檔的位置
+error_log  /var/log/nginx/error.log warn;
+#log等級從低到高依序為 debug | info | notice | warn | error | crit
 
-  <%- partial('_partial/dialog') %>
-  
-  <a id="rocket" href="#top" class=""></a>
-  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
-  <% if (is_post() && theme.post_catalog.enable){ %>
-    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
-  <% } %>
-</body>
-</html>
+#紀錄pid的文件
+pid        /var/run/nginx.pid;
+
+events {
+    # 允許同一時間連線總數量
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # 設定log記錄格式
+    # 語法:log_format name（格式名字） 格式樣式（想要得到什麼樣的log內容）
+    log_format  main  &apos;$remote_addr - $remote_user   [$time_local] &quot;$request&quot; &apos;
+                  &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;
+                  &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;
+</code></pre><p>可設置的參數格式及說明如下：<br><img src="/2018/07/08/Nginx基礎介紹/log.jpg" alt=""></p>
+<pre><code>    # 設定log檔的存放路徑
+    access_log  /var/log/nginx/access.log  main;
+
+    #sendfile設定可提高Nginx靜態資源託管效率，它是一個系統調用，直接在內核空間完成文件發送，不需要先read再write
+    sendfile        on;
+    #只有在啟用sendfile之後才生效。啟用之後，封包會累計到一定大小之後才會發送，減小額外發送，提高網路效率。
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    # 預設不會自動啟動gzip壓縮
+    #gzip  on;
+
+    # 載入/etc/nginx/conf.d/下的所有設定檔
+    # 通常都是各個虛擬主機的配置
+    include /etc/nginx/conf.d/*.conf;
+}
+</code></pre><p>預設主機的設定 default.conf</p>
+<pre><code>server {
+    # 虛擬主機的Port和名稱
+    listen       80;
+    server_name  localhost;
+
+    # 預設編碼，通常不建議開啟，讓網頁中的meta或header自行定義
+    #charset koi8-r;
+
+    # 可額外針對這個站台修改log的存放位置
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    # 根目錄的設定
+    location / {
+
+        # 實際檔案位置
+        root   /usr/share/nginx/html;
+        # 預設首頁檔名
+        index  index.html index.htm;
+    }
+
+    # 如果發生404可以指定到特定的頁面來顯示
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache&apos;s document root
+    # concurs with nginx&apos;s one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+</code></pre><h4 id="Nginx建置多台虛擬主機"><a href="#Nginx建置多台虛擬主機" class="headerlink" title="Nginx建置多台虛擬主機"></a>Nginx建置多台虛擬主機</h4><p>虛擬主機（Virtual Host）用的是特殊的軟硬件技術，可以在一台Nginx主機上綁定多個網域，架設多個不同的網站，每台虛擬主機都可以是一個獨立的網站，具有獨立的域名及完整的Internet服務功能，利用虛擬主機，不需為每個要運行的網站提供一台獨立的Nginx伺服器。</p>
+<h5 id="虛擬主機配置"><a href="#虛擬主機配置" class="headerlink" title="虛擬主機配置"></a>虛擬主機配置</h5><p>到 /nginx-docker/conf/conf.d (本機映射到容器的路徑) 目錄底下新增 site1.conf 和 site2.conf 文件</p>
+<h5 id="site1-conf"><a href="#site1-conf" class="headerlink" title="site1.conf"></a>site1.conf</h5><pre><code>server {
+listen       81;
+server_name  localhost;
+
+#charset koi8-r;
+#access_log  /var/log/nginx/host.access.log  main;
+
+location / {
+    root   /etc/nginx/data/site1;
+    index  index.html index.htm;
+}
+}                ......(以下省略)
+</code></pre><h5 id="site2-conf"><a href="#site2-conf" class="headerlink" title="site2.conf"></a>site2.conf</h5><pre><code>server {
+listen       82;
+server_name  localhost;
+
+#charset koi8-r;
+#access_log  /var/log/nginx/host.access.log  main;
+
+location / {
+    root   /etc/nginx/data/site2;
+    index  index.html index.htm;
+}
+}                ......(以下省略)
+</code></pre><p>到 nginx-docker/conf/ (本機映射到容器裡的/etc/nginx/路徑)目錄底下新增 data 子目錄，在 /data/ 下分別建置site1和site2的文件夾，最後分別在文件夾裡建置 index.html </p>
+<p>因為設定檔有修改到port，需重新運行容器才會生效，因此我們要將原本的容器停止運行並刪除，重新再建一個容器</p>
+<p>切換到/nginx-docker/下。執行以下命令:</p>
+<pre><code>docker run -d -p 7777:80 -p 3001:81 -p 3002:82 --name nginx-server -v &quot;$PWD/html&quot;:/usr/share/nginx/html -v &quot;$PWD/conf&quot;:/etc/nginx nginx
+</code></pre><p>*<font color="red"> 因新增2台虛擬主機設定的port為81、82，這裡需特別注意要新增指定本機與容器對應的port</font></p>
+<h4 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h4><p>查看容器是否運行成功</p>
+<pre><code>docker ps -a
+</code></pre><p>我們也可以進入容器查看指定的本機目錄是否有映射到容器裡</p>
+<pre><code>docker exec -ti 容器名稱 bash
+</code></pre><p>最後，到瀏覽器輸入<a href="http://10.9.66.16:3001" target="_blank" rel="noopener">http://10.9.66.16:3001</a> 及 <a href="http://10.9.66.16:3002" target="_blank" rel="noopener">http://10.9.66.16:3002</a> 查看site1和site2下的兩個index.html是否正常顯示</p>
+<p><img src="/2018/07/08/Nginx基礎介紹/site1.png" alt=""></p>
+</article></main></body></html>
