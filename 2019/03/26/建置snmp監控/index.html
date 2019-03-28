@@ -1,22 +1,43 @@
-<!DOCTYPE html><html lang="en-us"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>建置SNMP監控 | 萱仔的Blog</title><meta name="description"><meta name="generator" content="萱仔的Blog"><meta name="author" content="John Doe"><meta name="keywords" content="sjaak van den berg, svdb, bitcoin, crypto, payment, integration, bitcoins, wordpress, betaling, webshop, front end, design, ontwerp, developer"><meta name="HandheldFriendly" content="True"><meta name="MobileOptimized" content="320"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=0"><link rel="stylesheet" type="text/css" href="/styles/screen.css"><link rel="apple-touch-icon" sizes="57x57" href="/images/apple-touch-icon-57x57.png"><link rel="apple-touch-icon" sizes="60x60" href="/images/apple-touch-icon-60x60.png"><link rel="apple-touch-icon" sizes="72x72" href="/images/apple-touch-icon-72x72.png"><link rel="apple-touch-icon" sizes="76x76" href="/images/apple-touch-icon-76x76.png"><link rel="apple-touch-icon" sizes="114x114" href="/images/apple-touch-icon-114x114.png"><link rel="apple-touch-icon" sizes="120x120" href="/images/apple-touch-icon-120x120.png"><link rel="apple-touch-icon" sizes="144x144" href="/images/apple-touch-icon-144x144.png"><link rel="apple-touch-icon" sizes="152x152" href="/images/apple-touch-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-180x180.png"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png"><link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png"><link rel="icon" type="image/png" sizes="160x160" href="/images/favicon-160x160.png"><link rel="icon" type="image/png" sizes="192x192" href="/images/favicon-192x192.png"><meta name="msapplication-TileColor" content="#121315"><meta name="msapplication-TileImage" content="/images/mstile-144x144.png"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body itemscope itemtype="https://schema.org/WebPage"><header itemscope itemtype="https://schema.org/WPHeader"><a href="/"><img src="/images/svdb.png" alt="萱仔的Blog" title="萱仔的Blog"></a><h1><a href="/" alt="萱仔的Blog" title="萱仔的Blog" itemprop="headline">萱仔的Blog</a></h1><p itemprop="description"></p><nav itemscope itemtype="https://schema.org/SiteNavigationElement"><ul><li itemprop="name"><a href="/" alt="Home" title="Home" itemprop="url">Home</a></li><li itemprop="name"><a href="/articles" alt="Articles" title="Articles" itemprop="url">Articles</a></li><li itemprop="name"><a href="/about" alt="About" title="About" itemprop="url">About</a></li></ul></nav><div class="space"></div></header><main itemscope itemtype="https://schema.org/Blog"><article class="full"><h1 itemprop="headline">建置SNMP監控</h1><span class="post-meta">Published on<time itemprop="datePublished" datetime="2019-03-26T10:03:13.000Z"> 星期二, 三月 26日 2019 at 18:03</time><br>Last updated on<time itemprop="dateModified" datetime="2019-03-26T10:03:13.000Z"> 星期三, 三月 27日 2019 at 17:37</time></span><h4 id="SNMP介紹"><a href="#SNMP介紹" class="headerlink" title="SNMP介紹 "></a>SNMP介紹 <br></h4><p>SNMP是簡單網路管理協定(Simple Network Management Protocol)的簡稱，也就是一種簡化的網路管理工具，可提供管理、收集數據、發包控制等等的簡單網路功能，本次示範選擇用telegraf配置工具。</p>
-<h4 id="環境-Ubuntu-16-04-4-LTS"><a href="#環境-Ubuntu-16-04-4-LTS" class="headerlink" title="環境:Ubuntu 16.04.4 LTS"></a>環境:Ubuntu 16.04.4 LTS<br></h4><p>首先輸入vim /etc/telegraf/telegraf.conf進入telegraf配置文件的編輯模式，在指令模式下用關鍵字/inputs.snmp到snmp的設定部分，在oid寫入的部分一般推薦使用 [[inputs.snmp.field]] 來抓取oid。</p>
-<p>oid:是用來對應Switch、FireWall等硬體設備的詳細狀態訊息的動態api接口名稱，全名為Object Identifier，以下為範例。</p>
-<p>各式硬體設備的oid可到 <a href="http://www.oidview.com/mibs/detail.html" target="_blank" rel="noopener">http://www.oidview.com/mibs/detail.html</a> 查詢MIB</p>
-<p><img src="/2019/03/26/建置snmp監控/snmp1.png" alt=""></p>
-<h5 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h5><p>agents : 被監控的設備IP，預設port為161，可省略</p>
-<p>community : SNMP密碼，如果不知道，就不能透過SNMP獲取系統數據</p>
-<p>注意:在telegraf的inputs.snmp部分寫入的oid，必須是oid樹結構的末梢，如果非末梢會導致讀到的是數據表而非單一值，而無法寫入influxdb中。</p>
-<p>有了oid對照表，我們可以精確地抓取相關硬體設備的動態訊息。snmp也有提供相關的工具幫助我們驗證oid的可用性，可以安裝snmpwalk檢測工具，以Ubuntu為例:</p>
-<pre><code>apt-get install -y snmp
-</code></pre><p>查看版本</p>
-<pre><code> snmpwalk -V
-</code></pre><p>輸入以下指令查詢oid的有效性</p>
-<pre><code> snmpwalk -v 2 -c YourCommunity &lt;IP/URL&gt;&lt;oid&gt;
-</code></pre><p>Windows可以安裝MIB Browser來驗證oid，以下用OiDViEW當作範例:</p>
-<p>1.點選New Session建立新連線</p>
-<p>2.輸入要查詢的機器IP、Port、SNMP版本</p>
-<p>3.建立連線</p>
-<p>4.程式會自動搜尋MIB，等待一段時間載完即可</p>
-<p><img src="/2019/03/26/建置snmp監控/snmp2.png" alt=""></p>
-<p><img src="/2019/03/26/建置snmp監控/snmp3.png" alt=""></p>
-</article></main></body></html>
+<%- partial('_partial/head') %>
+
+<% if (is_post()){ %>
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+<% } else {%>
+  <body>
+<% } %>
+
+  <% if (is_home() && theme.home_background_image.enable){ %>
+    <%- partial('_partial/header', null, {cache: !config.relative_link}) %>
+  <% } %>
+  <div id="container">
+    <div id="wrap">
+      <% if (!is_home() || !theme.home_background_image.enable){ %>
+        <%- partial('_partial/header-post') %>
+      <% } %>
+            
+      <div id="content" class="outer">
+        <% if (theme.sidebar && theme.sidebar !== 'bottom' && (is_archive())){ %>
+          <section id="main"><%- body %></section>
+          <%- partial('_partial/sidebar', null, {cache: !config.relative_link}) %>
+        <% } else {%>
+          <section id="main" style="float:none;"><%- body %></section>
+        <% } %>
+      </div>
+      <% if (is_home()){ %>
+        <div align="center" style="margin-top: 30px;"><hr class="hr" style="margin:0px; height:3px;"></div>
+      <% } %>
+      <%- partial('_partial/footer', null, {cache: !config.relative_link}) %>
+    </div>
+    <!-- <%- partial('_partial/mobile-nav', null, {cache: !config.relative_link}) %> -->
+    <%- partial('_partial/after-footer') %>
+  </div>
+
+  <%- partial('_partial/dialog') %>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  <% if (is_post() && theme.post_catalog.enable){ %>
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  <% } %>
+</body>
+</html>
